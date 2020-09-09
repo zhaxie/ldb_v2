@@ -1,0 +1,277 @@
+
+/*---------
+  common
+------------*/
+#app{
+    padding-top: 0;
+}
+.theme-bg {
+  background-color: #f39c36;
+}
+
+.theme-color {
+  color: #f39c36 !important;
+}
+
+.theme-border {
+  border: 1px solid #f39c36 !important;
+}
+
+.theme-color-red {
+  color: #ff1a1a;
+}
+
+.theme-bg-red {
+  background-color: #ff1a1a;
+}
+
+.theme-color-prink {
+  color: #ff2d54;
+}
+
+.theme-bg-prink {
+  background-color: #ff2d54;
+}
+
+.hover-bg-gray:active {
+  background-color: #f4f4f4;
+}
+
+.border-bottom-10-f4 {
+  border-bottom: 0.5rem solid #f4f4f4;
+}
+
+.border-bottom-1-e {
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.border-radius-8 {
+  border-radius: 0.2rem;
+}
+
+/* 三角按钮 */
+
+.icon-moreRight {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-top: 1px solid #333;
+  border-right: 1px solid #333;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.icon-closeBtn {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid #999;
+  border-radius: 50%;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.icon-closeBtn::before, .icon-closeBtn::after {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  content: '';
+  display: block;
+  width: 60%;
+  height: 1px;
+  background-color: #999;
+}
+
+.icon-closeBtn::after {
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+}
+
+
+/* 通用：头部 */
+
+.com-header {
+  line-height: 2.25rem;
+}
+
+.com-header.border-bottom {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.com-header .title {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #333;
+}
+
+.com-header .btn-list {
+  right: 0;
+  bottom: 0;
+  font-size: 0.8rem;
+}
+
+.com-header .back-btn-box {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.com-header .back-btn {
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  padding-right: 1.5rem;
+}
+
+.com-header .back-btn::after {
+  position: absolute;
+  content: "";
+  display: block;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.com-header.white .back-btn::after {
+  border-color: #fff;
+}
+
+.com-header.white {
+  color: #fff;
+}
+
+.com-header .nav-list .active {
+  position: relative;
+}
+
+.com-header .nav-list .active::after {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  content: "";
+  display: block;
+  width: 50%;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 1px;
+}
+
+.com-header .icon-shopCart {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.com-header .icon-shopCart .cart-num {
+  left: 0.74rem;
+  bottom: 0.7rem;
+  min-width: 0.8rem;
+  text-align: center;
+  line-height: 0.8rem;
+  padding: 0 0.2rem;
+  border-radius: 0.8rem;
+  font-size: 0.56rem;
+  color: #fff;
+}
+
+.com-header .share-btn {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+.com-header .share-btn .icon-share {
+  width: 0.9rem;
+  height: 1rem;
+}
+
+/* 通用：选择icon圆圈 */
+
+.com-choose-box {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: solid 0.03rem #cccccc;
+}
+
+.com-choose-box.active {
+  position: relative;
+  border: 1px solid rgb(243, 156, 54);
+  background-color: rgb(243, 156, 54);
+}
+
+.com-choose-box.active::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  content: '';
+  display: block;
+  width: 50%;
+  height: 20%;
+  border-top: 1px solid #fff;
+  border-right: 1px solid #fff;
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+
+/* 通用：提交按钮 */
+
+.com-submit-btn {
+  background-image: linear-gradient(90deg, #ffb65c 0%, #ed9005 100%);
+  text-align: center;
+  font-size: 1rem;
+  letter-spacing: 0.1rem;
+  color: #fff;
+}
+
+/* 通用：底部大按钮 */
+
+.com-btn {
+  line-height: 2.25rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(90deg, #ffb65c 0%, #ed9005 100%);
+  text-align: center;
+  font-size: 0.8rem;
+  color: #fff;
+}
+.com-btn:active{
+  opacity: 0.8;
+}
+.com-btn.bg-red {
+  background: #ff1a1a !important;
+  border-radius: 0;
+  line-height: 2.5rem;
+}
+
+/* 通用：input输入条 */
+
+.com-input-bar {
+  font-size: 0.75rem;
+}
+
+.com-input-bar {
+  border-bottom: 1px solid #eee;
+}
+
+/* 通用：input输入条 */
+
+.com-textarea-box, .com-textarea-box.textarea-box {
+  font-size: 0.75rem;
+}
+
+.com-textarea-box .textarea-box {
+  height: 4rem;
+}
