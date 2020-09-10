@@ -4,7 +4,7 @@
       <li class="row p-h-30 p-v-10 input-bar">
         <div class="col-3">手机号</div>
         <input
-          type="text"
+          type="number"
           class="col"
           placeholder="请输入手机号"
           maxlength="11"
@@ -13,7 +13,13 @@
       </li>
       <li class="row p-h-30 p-v-10 input-bar">
         <div class="col-3">验证码</div>
-        <input type="text" class="col" placeholder="请输入验证码" maxlength="6" v-model.lazy.trim="mobileCode" />
+        <input
+          type="number"
+          class="col"
+          placeholder="请输入验证码"
+          maxlength="6"
+          v-model.lazy.trim="mobileCode"
+        />
         <!-- 获取验证码 -->
         <valid-code :mobile="mobile" :codeType="'changeLoginPassword'"></valid-code>
       </li>
@@ -23,7 +29,12 @@
       </li>
       <li class="row p-h-30 p-v-10 input-bar">
         <div class="col-3">确认密码</div>
-        <input type="password" class="col" placeholder="请再次输入密码" v-model.lazy.trim="reInputPassword" />
+        <input
+          type="password"
+          class="col"
+          placeholder="请再次输入密码"
+          v-model.lazy.trim="reInputPassword"
+        />
       </li>
     </ul>
     <div class="m-h-30 m-v-50 com-btn" @click.stop="changePassword();">修改</div>
@@ -44,83 +55,81 @@ export default {
       code: "",
       password: "",
       reInputPassword: "",
-      mobileCode: '',
+      mobileCode: ""
     };
+  },
+  mounted() {
+    //点击entry键聚焦到下一个input
+    this.$nextTick(() => {
+      this.$focusOnNextInputByEntry({
+        onSubmit: () => {
+          this.doLogin();
+        }
+      });
+    });
   },
   methods: {
     changePassword() {
-      if (this.isSubmitted_changePassword === true) {
-        this.$toast({
-          msg: "已发送，请稍后"
-        });
-        return false;
-      }
+      try {
+        if (this.isSubmitted_changePassword === true) {
+          throw '已发送，请稍后';
+        }
 
-      const mobile = this.mobile;
-      const mobileCode = this.mobileCode;
-      const password = this.password;
-      const reInputPassword = this.reInputPassword;
+        const mobile = this.mobile;
+        const mobileCode = this.mobileCode;
+        const password = this.password;
+        const reInputPassword = this.reInputPassword;
 
-      if (!mobile) {
-        this.$toast({
-          msg: "请输入手机号"
-        });
-        return false;
-      }
-      if (!validValue.isMobile(mobile)) {
-        this.$toast({
-          msg: "手机号码格式有误"
-        });
-        return false;
-      }
+        if (!mobile) {
+          throw '请输入手机号';
+        }
 
-      if (!mobileCode || mobileCode.length !== 6) {
-        this.$toast({
-          msg: "请输入6位手机验证码"
-        });
-        return false;
-      }
+        if (!validValue.isMobile(mobile)) {
+          throw '手机号码格式有误';
+        }
 
-      if (!password) {
-        this.$toast({
-          msg: "请输入密码"
-        });
-        return false;
-      }
-      if (!reInputPassword) {
-        this.$toast({
-          msg: "请再次输入密码"
-        });
-        return false;
-      }
-      if (reInputPassword !== password) {
-        this.$toast({
-          msg: "两次输入的密码不一致"
-        });
-        return false;
-      }
+        if (!mobileCode || mobileCode.length !== 6) {
+          throw '请输入6位手机验证码';
+        }
 
-      this.isSubmitted_changePassword = true;
+        if (!password) {
+          throw '请输入密码';
+        }
 
-      this.$ajax({
-        urlKey: "submitChangeLoginPassword",
-        post: {
-          mobile: mobile,
-          code: mobileCode,
-          password: password,
-          repassword: reInputPassword
-        },
-        success: ret => {
-          if (ret.code === 1) {
-            this.$router.go(-1);
-          } else {
+        if (!reInputPassword) {
+          throw '请再次输入密码';
+        }
+
+        if (reInputPassword !== password) {
+          throw '两次输入的密码不一致';
+        }
+
+        this.isSubmitted_changePassword = true;
+
+        this.$ajax({
+          urlKey: "submitChangeLoginPassword",
+          post: {
+            mobile: mobile,
+            code: mobileCode,
+            password: password,
+            repassword: reInputPassword
+          },
+          success: ret => {
+            if (ret.code === 1) {
+              this.$router.go(-1);
+            } else {
+              this.isSubmitted_changePassword = false;
+            }
+          },
+          fail: () => {
             this.isSubmitted_changePassword = false;
           }
-        },
-        fail: () => {
-          this.isSubmitted_changePassword = false;
-        }
-      });
+        });
+      } catch (error) {
+        this.$toast({
+          msg: error
+        });
+      }
     }
   }
 };

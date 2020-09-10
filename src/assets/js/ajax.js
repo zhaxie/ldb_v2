@@ -69,7 +69,7 @@ export default {
                             this.$nextTick(() => {
                                 this.$router.push({
                                     name: "loginOrRegister",
-                                    params: this.$route.query,
+                                    query: this.$route.query,
                                 });
                             });
 

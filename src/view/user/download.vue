@@ -2,6 +2,7 @@
   <div class="download-page">
     <div class="fixed-center w-100">
       <div class="com-btn m-50" @click.stop="$openToApp();">打开得宝购app</div>
+      <!-- <div @click="$showDobwnLoadTips()">2222</div> -->
     </div>
   </div>
 </template>

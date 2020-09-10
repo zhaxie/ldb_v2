@@ -7,7 +7,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'download',
+      name: 'home',
       component: require('@/view/user/download').default
     },
     {

@@ -53,6 +53,57 @@ const globalMethodsObj = {
     Vue.prototype.$hideLoading = (options) => { instance_loading.hideLoading(options) };
   },
 
+  //安卓机打开app的遮罩提示
+  andriodOpenAppMaskTips(Vue) {
+    const openAppMaskTips = Vue.extend(require('@/components/openAppMaskTips.vue').default);
+    let instance_openAppMaskTips = new openAppMaskTips();
+
+    instance_openAppMaskTips.$mount(document.createElement('div'));
+    document.body.appendChild(instance_openAppMaskTips.$el);
+
+    Vue.prototype.$showDownLoadTips = (options) => { instance_openAppMaskTips.showDownLoadTips(options) };
+  },
+
+  //点击entry键聚焦到下一个input
+  focusOnNextInputByEntry(Vue) {
+    var _currentFoucsInputIndex;
+
+    Vue.prototype.$focusOnNextInputByEntry = (options) => {
+      let $inputDomList = document.querySelectorAll("input");
+      let $inputDomListLen = $inputDomList.length;
+
+      console.info("inputDomList", $inputDomList);
+      console.info("inputDomList", $inputDomList[0]);
+
+      _currentFoucsInputIndex = 0;
+
+      for (let i = 0; i < $inputDomListLen; i++) {
+        let item = $inputDomList[i];
+
+        item.addEventListener("focus", () => {
+          _currentFoucsInputIndex = i;
+        });
+      }
+
+      document.onkeydown = (ev) => {
+        var event = ev || event;
+
+        if (event.keyCode == 13) {
+          var nextFocusIndex = _currentFoucsInputIndex + 1;
+
+          console.info('nextFocusIndex', nextFocusIndex);
+          console.info('$inputDomListLen', $inputDomListLen);
+
+          if ($inputDomListLen !== nextFocusIndex) {
+            $inputDomList[nextFocusIndex].focus();
+          } else {
+            options.onSubmit && options.onSubmit();
+          }
+        }
+      };
+    };
+
+  }
 }
 
 export default {

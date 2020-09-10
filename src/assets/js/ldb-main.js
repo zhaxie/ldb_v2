@@ -97,10 +97,7 @@ const openToApp = function () {
 
         if (isAndroid) {
             if (isWeChatBrowser() === true) {
-                Vue.prototype.$toast({
-                    msg: "请点击右上角，在浏览器中打开",
-                    duration: 3000
-                });
+                Vue.prototype.$showDownLoadTips();
             } else {
                 Vue.prototype.$showLoading({
                     showMask: true,

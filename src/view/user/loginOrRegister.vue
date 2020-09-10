@@ -9,11 +9,21 @@
     <div class="m-h-40">
       <!-- 通用：input输入条 -->
       <div class="p-v-10 com-input-bar">
-        <input type="text" placeholder="请输入手机号" v-model.lazy.trim="username" maxlength="11" />
+        <input type="number" placeholder="请输入手机号" v-model.lazy.trim="username" maxlength="11" />
       </div>
       <!-- 通用：input输入条 -->
-      <div class="p-v-10 com-input-bar">
-        <input type="password" placeholder="请输入密码" v-model.lazy.trim="password" />
+      <div class="d-flex align-items-center p-v-10 com-input-bar">
+        <input
+          class="col"
+          :type="!isVisiblePassword ? 'password' : 'text'"
+          placeholder="请输入密码"
+          v-model.lazy.trim="password"
+        />
+        <div
+          class="iconfont"
+          :class="!isVisiblePassword ? 'icon-unLook' : 'icon-look'"
+          @click="isVisiblePassword = !isVisiblePassword"
+        ></div>
       </div>
       <!-- 登录专用 -->
       <div v-if="pageType === ''">
@@ -28,9 +38,19 @@
       <!-- 注册专用 -->
       <div v-if="pageType === 1">
         <!-- 通用：input输入条 -->
+        <div class="d-flex align-items-center p-v-10 com-input-bar">
+          <input
+            class="col"
+            :type="!isVisiblePassword ? 'password' : 'text'"
+            placeholder="请确认输入的密码"
+            v-model.lazy.trim="reInputPassword"
+          />
+        </div>
+
+        <!-- 通用：input输入条 -->
         <div class="row p-v-10 com-input-bar">
           <input
-            type="text"
+            type="number"
             class="col"
             placeholder="请输入验证码"
             maxlength="6"
@@ -88,28 +108,29 @@ export default {
       isRememberUsername: true,
       pageType: "", //1:注册 default:登录
       isAgreeAgreement: false,
-      mobileValidCode: ""
+      mobileValidCode: "",
+      isVisiblePassword: false,
+      reInputPassword: ""
     };
   },
-  mounted() {
+  async mounted() {
     //回填用户名
-    this.reInputUserName();
-    this.setPageType();
+    await this.reInputUserName();
+    await this.setPageType();
   },
   methods: {
     // 设置页面的类型：resigter注册： defalut: 登录
     setPageType(isHandleSwitchBtn) {
-    
       let query = this.$route.query;
       let pageType;
 
+      console.info("来登录的参数query", query);
 
-      console.info('来登录的参数query', query);
-
-      if(isHandleSwitchBtn){ //是点击切换注册或登录的按钮
-        pageType = this.pageType === 1 ? '' : 1;
-      }else{
-        pageType = query.pageType = Number(query.pageType) || '';
+      if (isHandleSwitchBtn) {
+        //是点击切换注册或登录的按钮
+        pageType = this.pageType === 1 ? "" : 1;
+      } else {
+        pageType = query.pageType = Number(query.pageType) || "";
       }
 
       switch (pageType) {
@@ -119,19 +140,42 @@ export default {
 
         default:
           query.urlKey_submit = "login";
-          !isHandleSwitchBtn && this.$toast({
-            msg: "请先登录"
-          });
+          !isHandleSwitchBtn &&
+            this.$toast({
+              msg: "请先登录"
+            });
           break;
       }
 
       this.pageType = pageType;
-      
+
+      //点击entry键聚焦到下一个input
+      this.$nextTick(() => {
+        this.$focusOnNextInputByEntry({
+          onSubmit: () => {
+            this.doLogin();
+          }
+        });
+      });
     },
     //回填用户名
     reInputUserName() {
       const local_username = localStorage.getItem("username");
-      local_username && (this.username = local_username);
+
+      console.info("local_username", local_username);
+
+      switch (local_username) {
+        case null:
+          this.isRememberUsername = true;
+          break;
+        case "":
+          this.isRememberUsername = false;
+          break;
+        default:
+          this.isRememberUsername = true;
+          this.username = local_username;
+          break;
+      }
     },
 
     //切换是否同意
@@ -141,67 +185,68 @@ export default {
 
     //登录
     doLogin() {
-      const username = this.username;
-      const password = this.password;
+      try {
+        const parentID = this.$route.query.parentID;
 
-      if (!username) {
-        this.$toast({
-          msg: "请输入手机号"
-        });
-        return false;
-      }
+        const username = this.username;
+        const password = this.password;
+        const reInputPassword = this.reInputPassword;
 
-      if (!validValue.isMobile(username)) {
-        this.$toast({
-          msg: "手机号码格式有误"
-        });
-        return false;
-      }
+        if (!username) {
+          throw "请输入手机号";
+        }
 
-      if (!password) {
-        this.$toast({
-          msg: "请输入密码"
-        });
-        return false;
-      }
+        if (!validValue.isMobile(username)) {
+          throw "手机号码格式有误";
+        }
 
-      const parentID = this.$route.query.parentID;
+        if (!password) {
+          throw "请输入密码";
+        }
 
-      switch (
-        this.pageType //1:注册 default：登录
-      ) {
-        case 1:
-          const mobileValidCode = this.mobileValidCode;
+        switch (
+          this.pageType //1:注册 default：登录
+        ) {
+          case 1:
+            const mobileValidCode = this.mobileValidCode;
 
-          if (!mobileValidCode) {
-            this.$toast({
-              msg: "请输入短信验证码"
+            if (!reInputPassword) {
+              throw "请输入确认密码";
+            }
+
+            if (password !== reInputPassword) {
+              throw "两次输入的密码不一致";
+            }
+
+            if (!mobileValidCode) {
+              throw "请输入短信验证码";
+            }
+
+            if (!this.isAgreeAgreement) {
+              throw "请阅读并同意《注册协议》和《隐私协议》";
+            }
+
+            this.postLogin({
+              mobile: username, //mobile	是	string	手机号
+              username,
+              password: password, //password	是	string	密码
+              code: mobileValidCode, //code	是	string	短信验证码
+              parent_id: parentID || "" //parent_id	否	integer	邀请人id
             });
-            return false;
-          }
 
-          if (!this.isAgreeAgreement) {
-            this.$toast({
-              msg: "请阅读并同意《注册协议》和《隐私协议》"
+            break;
+          default:
+            this.postLogin({
+              username: username, //username	是	string	用户名/手机号码
+              password_summary: md5(username + md5(password)), //password_summary	是	string	密码摘要：md5(username+md5(password))
+              parent_id: parentID || "" //parent_id	否	integer	邀请人id
             });
-            return false;
-          }
-
-          this.postLogin({
-            mobile: username, //mobile	是	string	手机号
-            password: password, //password	是	string	密码
-            code: mobileValidCode, //code	是	string	短信验证码
-            parent_id: parentID || "" //parent_id	否	integer	邀请人id
-          });
-
-          break;
-        default:
-          this.postLogin({
-            username: username, //username	是	string	用户名/手机号码
-            password_summary: md5(username + md5(password)), //password_summary	是	string	密码摘要：md5(username+md5(password))
-            parent_id: parentID || "" //parent_id	否	integer	邀请人id
-          });
-          break;
+            break;
+        }
+      } catch (error) {
+        this.$toast({
+          msg: error
+        });
       }
     },
 
@@ -222,8 +267,11 @@ export default {
         post: post,
         success: ret => {
           if (ret.code === 1) {
+            //登录模式
             if (!query.pageType) {
-              if (this.isRememberUsername) {
+              const isRememberUsername = this.isRememberUsername;
+
+              if (isRememberUsername) {
                 localStorage.setItem("username", post.username);
               } else {
                 localStorage.setItem("username", "");
@@ -233,9 +281,17 @@ export default {
             this.$toast({
               msg: ret.msg || "操作成功"
             });
-            this.$router.go(-1);
+
+            //绑定上下级关系的就直接跳转到下载app页面
+            if (post.parent_id) {
+              this.$router.replace({
+                name: "download"
+              });
+            } else {
+              this.$router.go(-1);
+            }
+
             localStorage.setItem("token", ret.result.token);
-            
           } else {
             this.isSubmitting_login = false;
           }
@@ -248,10 +304,13 @@ export default {
 
     //记住用户名
     rememberUsername() {
-      this.isRememberUsername = !this.isRememberUsername;
-    },
+      const isRememberUsername = (this.isRememberUsername = !this
+        .isRememberUsername);
 
-
+      if (isRememberUsername === false) {
+        localStorage.setItem("username", "");
+      }
+    }
   }
 };
 </script>
